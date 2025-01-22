@@ -26,10 +26,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.smishingdetectionapp.sms.SMSAdapter;
 import com.example.smishingdetectionapp.sms.SMSClickListener;
 import com.example.smishingdetectionapp.sms.model.SMSMessage;
+import com.example.smishingdetectionapp.sms.SMSExtractor;
 
 import java.util.ArrayList;
 
-public class SmsActivity extends AppCompatActivity implements SMSClickListener {
+public class SmsActivity extends SharedActivity implements SMSClickListener {
     private ArrayList<SMSMessage> smsMessageList = new ArrayList<>();
     private static final int READ_SMS_PERMISSION_CODE = 1;
 
@@ -59,6 +60,7 @@ public class SmsActivity extends AppCompatActivity implements SMSClickListener {
         smsRecyclerView.setLayoutManager(new LinearLayoutManager(this)); // Set layout manager for RecyclerView
         smsAdapter = new SMSAdapter(this); // Initialize the adapter with context
         smsRecyclerView.setAdapter(smsAdapter);
+        SMSExtractor smsExtractor = new SMSExtractor(getApplicationContext());
 
         //checking the sms read permission on runtime
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_SMS)
@@ -67,7 +69,7 @@ public class SmsActivity extends AppCompatActivity implements SMSClickListener {
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.READ_SMS}, READ_SMS_PERMISSION_CODE);
         } else {
-            getInboxMessages();
+            smsAdapter.updateMessagesList(smsExtractor.extractAllMessages());
         }
     }
 
